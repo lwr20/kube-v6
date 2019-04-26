@@ -51,25 +51,3 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 echo "Configuring CNI bridge"
 sudo rm /etc/cni/net.d/* || true
 sudo mkdir -p /etc/cni/net.d/
-sudo tee /etc/cni/net.d/10-bridge-v6.conf << EOF
-{
-  "cniVersion": "0.3.0",
-  "name": "mynet",
-  "type": "bridge",
-  "bridge": "cbr0",
-  "isDefaultGateway": true,
-  "ipMasq": true,
-  "hairpinMode": true,
-  "ipam": {
-    "type": "host-local",
-    "ranges": [
-      [
-        {
-          "subnet": "${base_ip6}$self_id::/80",
-          "gateway": "${base_ip6}$self_id::1"
-        }
-      ]
-    ]
-  }
-}
-EOF
