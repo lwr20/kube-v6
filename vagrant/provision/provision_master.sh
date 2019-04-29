@@ -43,6 +43,10 @@ if [ ! -f "/vagrant/config/kubadm-init-done" ]; then
   touch "/vagrant/config/kubadm-init-done"
 fi
 
+echo "Configuring Cluster DNS"
+k8s_dns=${k8s_service_cidr}:a
+sudo sed -i "s/- 10.96.0.10/- $k8s_dns/" /var/lib/kubelet/config.yaml
+
 echo "kubectl config for user $(id -u)"
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config

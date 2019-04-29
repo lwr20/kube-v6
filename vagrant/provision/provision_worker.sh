@@ -28,11 +28,6 @@ get_vm_conf "$self_name"
 self_id="$vm_id"
 self_hostname="$vm_hostname"
 
-
-echo "Configuring Cluster DNS"
-k8s_dns=${k8s_service_cidr}:a
-sudo sed -i "s/--cluster-dns=.* /--cluster-dns=$k8s_dns /" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-
 echo "Configuring CNI bridge"
 sudo rm /etc/cni/net.d/* || true
 sudo mkdir -p /etc/cni/net.d/
@@ -43,3 +38,8 @@ if [ ! -f "/vagrant/config/kubadm-join-${self_name}-done" ]; then
   sudo $cmd
   touch "/vagrant/config/kubadm-join-${self_name}-done"
 fi
+
+echo "Configuring Cluster DNS"
+k8s_dns=${k8s_service_cidr}:a
+sudo sed -i "s/- 10.96.0.10/- $k8s_dns/" /var/lib/kubelet/config.yaml
+sudo systemctl restart kubelet
